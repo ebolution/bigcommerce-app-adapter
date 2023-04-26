@@ -16,7 +16,7 @@ use Ebolution\BigcommerceAppAdapter\Domain\Contracts\BCAuthorizedUserRepositoryC
 use Ebolution\BigcommerceAppAdapter\Domain\ValueObjects\BCAuthorizedUserStoreHash;
 use Ebolution\BigcommerceAppAdapter\Domain\ValueObjects\BCAuthorizedUserUserId;
 
-final class RemoveUserUseCase
+final class RemoveUserUseCase extends WithBigCommerceSignedRequest
 {
     public function __construct(
         private readonly BCAuthorizedUserRepositoryContract $repository,
