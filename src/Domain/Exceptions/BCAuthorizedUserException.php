@@ -1,0 +1,17 @@
+<?php
+/**
+ * @category  Ebolution
+ * @package   ebolution/bigcommerce-app-adapter
+ * @author    Carlos Cid <carlos.cid@ebolution.com>
+ * @copyright 2023 Avanzed Cloud Develop S.L
+ * @license   Proprietary
+ */
+
+namespace Ebolution\BigcommerceAppAdapter\Domain\Exceptions;
+
+use Ebolution\Core\Domain\Exceptions\CustomException;
+
+final class BCAuthorizedUserException extends CustomException
+{
+
+}
