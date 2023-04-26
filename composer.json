@@ -2,7 +2,7 @@
     "name": "ebolution/bigcommerce-app-adapter",
     "description": "Base functionality to connect an App with BigCommerce and to provide a way to make authorized calls to BigCommerce API",
     "minimum-stability": "stable",
-    "version": "1.0.0",
+    "version": "1.0.1",
     "license": "proprietary",
     "authors": [
         {
