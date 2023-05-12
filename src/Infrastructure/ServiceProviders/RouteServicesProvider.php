@@ -15,6 +15,6 @@ class RouteServicesProvider extends ModuleManagerRouteServicesProvider
 {
     const BASE_PATH = __DIR__;
 
-    protected bool $loadApi = false;
-    protected bool $loadWeb = true;
+    protected bool $loadApi = true;
+    protected bool $loadWeb = false;
 }

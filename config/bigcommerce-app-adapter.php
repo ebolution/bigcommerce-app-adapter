@@ -36,14 +36,4 @@ return [
 
     'api_base_url' => 'https://api.bigcommerce.com',
 
-    /*
-    |--------------------------------------------------------------------------
-    | Middleware
-    |--------------------------------------------------------------------------
-    |
-    | Middleware to use for routes handled by this module.
-    |
-    */
-
-    'middleware' => 'web',
 ];
