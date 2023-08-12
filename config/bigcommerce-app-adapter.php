@@ -36,4 +36,15 @@ return [
 
     'api_base_url' => 'https://api.bigcommerce.com',
 
+    /*
+    |--------------------------------------------------------------------------
+    | Token Duration
+    |--------------------------------------------------------------------------
+    |
+    | JWT token issued by this module are valid for this number of hours
+    |
+    */
+
+    'token_duration_hours' => 8,
+
 ];

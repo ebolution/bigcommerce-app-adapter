@@ -10,8 +10,6 @@
 namespace Ebolution\BigcommerceAppAdapter\Application\App;
 
 use Ebolution\BigcommerceAppAdapter\Application\Contracts\ConfigurationInterface;
-use Ebolution\BigcommerceAppAdapter\Application\Exceptions\InvalidJWTToken;
-use Ebolution\BigcommerceAppAdapter\Application\Helpers\JWTDecoder;
 use Ebolution\BigcommerceAppAdapter\Domain\Contracts\BCAuthorizedUserRepositoryContract;
 use Ebolution\BigcommerceAppAdapter\Domain\ValueObjects\BCAuthorizedUserStoreHash;
 use Ebolution\BigcommerceAppAdapter\Domain\ValueObjects\BCAuthorizedUserUserId;

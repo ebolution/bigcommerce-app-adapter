@@ -10,7 +10,7 @@
 namespace Ebolution\BigcommerceAppAdapter\Application\App;
 
 use Ebolution\BigcommerceAppAdapter\Application\Contracts\ConfigurationInterface;
-use Ebolution\BigcommerceAppAdapter\Application\Contracts\PersistenceInterface;
+use Ebolution\BigcommerceAppAdapter\Application\Traits\JWTToken;
 use Ebolution\BigcommerceAppAdapter\Domain\Contracts\BCAuthorizedUserRepositoryContract;
 use Ebolution\BigcommerceAppAdapter\Domain\ValueObjects\BCAuthorizedUserSaveRequest;
 use Ebolution\BigcommerceAppAdapter\Domain\ValueObjects\BCAuthorizedUserStoreHash;
@@ -18,20 +18,24 @@ use Ebolution\BigcommerceAppAdapter\Domain\ValueObjects\BCAuthorizedUserUserId;
 
 final class LoadUseCase extends WithBigCommerceSignedRequest
 {
+    use JWTToken;
+
     public function __construct(
         private readonly BCAuthorizedUserRepositoryContract $repository,
-        private readonly ConfigurationInterface $configuration,
-        private readonly PersistenceInterface $session
+        private readonly ConfigurationInterface $configuration
     ) {
         parent::__construct($this->configuration);
     }
 
     protected function handle(array $verifiedSignedRequestData): array
     {
+        // "sub": "stores/<store-hash>"
+        $store_hash = substr($verifiedSignedRequestData['sub'], 7);
+
         // Get store's owner authorization
         $authUser = $this->repository->findByUserIdAndStoreHash(
             new BCAuthorizedUserUserId($verifiedSignedRequestData['owner']['id']),
-            new BCAuthorizedUserStoreHash($verifiedSignedRequestData['store_hash'])
+            new BCAuthorizedUserStoreHash($store_hash)
         );
         if (!$authUser) {
             return [
@@ -45,11 +49,11 @@ final class LoadUseCase extends WithBigCommerceSignedRequest
             $this->authorizeNewUser($verifiedSignedRequestData, $authUser['access_token']);
         }
 
-        $this->session->persist($authUser);
+        $token = $this->buildToken(['id' => $authUser['id']]);
 
         return [
             'result' => 'redirect',
-            'url' => '/'
+            'url' => "{$verifiedSignedRequestData['url']}?token={$token}"
         ];
     }
 

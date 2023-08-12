@@ -10,7 +10,7 @@
 namespace Ebolution\BigcommerceAppAdapter\Application\App;
 
 use Ebolution\BigcommerceAppAdapter\Application\Contracts\ConfigurationInterface;
-use Ebolution\BigcommerceAppAdapter\Application\Contracts\PersistenceInterface;
+use Ebolution\BigcommerceAppAdapter\Application\Traits\JWTToken;
 use Ebolution\BigcommerceAppAdapter\Domain\ValueObjects\BCAuthorizedUserSaveRequest;
 use Ebolution\BigcommerceAppAdapter\Domain\ValueObjects\BCAuthorizedUserStoreHash;
 use Ebolution\BigcommerceAppAdapter\Domain\ValueObjects\BCAuthorizedUserUserId;
@@ -20,10 +20,11 @@ use Ebolution\BigcommerceAppAdapter\Domain\Contracts\BCAuthorizedUserRepositoryC
 
 final class AuthUseCase
 {
+    use JWTToken;
+
     public function __construct(
         private readonly BCAuthorizedUserRepositoryContract $repository,
-        private readonly ConfigurationInterface $configuration,
-        private readonly PersistenceInterface $session
+        private readonly ConfigurationInterface $configuration
     ) {}
 
     public function __invoke(array $data): array
@@ -38,6 +39,7 @@ final class AuthUseCase
 
         try {
             $client = new Client();
+            $url = $this->configuration->get("RedirectURL");
             $result = $client->request('POST', $this->configuration->get("oauth_endpoint"), [
                 'json' => [
                     'client_id' => $this->configuration->get("AppClientId"),
@@ -70,8 +72,9 @@ final class AuthUseCase
         $statusCode = $result->getStatusCode();
         $data = json_decode($result->getBody(), true);
 
+        $token = 'unauthorized-request';
         if ($statusCode == 200) {
-            $this->authorizeUser($data);
+            $token = $this->authorizeUser($data);
 
             // If the merchant installed the app via an external link, redirect back to the
             // BC installation success page for this app
@@ -85,11 +88,11 @@ final class AuthUseCase
 
         return [
             'result' => 'redirect',
-            'url' => '/'
+            'url' => "/?token={$token}"
         ];
     }
 
-    private function authorizeUser(array $userData): void
+    private function authorizeUser(array $userData): string
     {
         $context_parts = explode('/', $userData['context'], 2);
         $store_hash = $context_parts[1];
@@ -97,7 +100,7 @@ final class AuthUseCase
             'store_hash' => $store_hash,
             'access_token' => $userData['access_token'],
             'user_id' => (string)$userData['user']['id'],
-            'user_email' => $userData['user']['email']
+            'user_email' => $userData['user']['email'],
         ];
 
         $this->repository->deleteByUserIdAndStoreHash(
@@ -106,9 +109,9 @@ final class AuthUseCase
         );
 
         $request = new BCAuthorizedUserSaveRequest($authUser, date("Y-m-d H:i:s"));
-        $this->repository->save($request);
+        $auth_id = $this->repository->save($request);
 
-        $this->session->persist($authUser);
+        return $this->buildToken(['id' => $auth_id]);
     }
 
     private function getBigcommerceLoginURL(bool $succeeded = true): string

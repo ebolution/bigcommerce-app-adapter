@@ -10,7 +10,6 @@
 namespace Ebolution\BigcommerceAppAdapter\Infrastructure\Helpers;
 
 use Ebolution\BigcommerceAppAdapter\Application\Contracts\ConfigurationInterface;
-use Ebolution\BigcommerceAppAdapter\Application\Contracts\PersistenceInterface;
 
 class LaravelConfigurationHelper implements ConfigurationInterface
 {
@@ -72,9 +71,14 @@ class LaravelConfigurationHelper implements ConfigurationInterface
 
     private function fromSession(string $item): string
     {
-        $session = app()->make(PersistenceInterface::class);
-        $session_data = $session->retrieve();
+        $handler = new LaravelSessionHelper();
+        $data = $handler->retrieve();
 
-        return $session_data[$item] ?? "";
+        return $data[$item] ?? '';
+    }
+
+    private function getAppName()
+    {
+        return env('APP_NAME');
     }
 }

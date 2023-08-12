@@ -18,6 +18,7 @@ final class BCAuthorizedUser extends Model
         'store_hash',
         'access_token',
         'user_id',
-        'user_email'
+        'user_email',
+        'jwt_token'
     ];
 }

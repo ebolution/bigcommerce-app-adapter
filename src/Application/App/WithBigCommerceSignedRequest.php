@@ -4,7 +4,7 @@ namespace Ebolution\BigcommerceAppAdapter\Application\App;
 
 use Ebolution\BigcommerceAppAdapter\Application\Contracts\ConfigurationInterface;
 use Ebolution\BigcommerceAppAdapter\Application\Exceptions\InvalidJWTToken;
-use Ebolution\BigcommerceAppAdapter\Application\Helpers\JWTDecoder;
+use Ebolution\BigcommerceAppAdapter\Application\Helpers\JWTHelper;
 
 abstract class WithBigCommerceSignedRequest
 {
@@ -14,8 +14,8 @@ abstract class WithBigCommerceSignedRequest
 
     public function __invoke(array $data): array
     {
-        $signedPayload = $data['signed_payload'];
-        if (empty($signedPayload)) {
+        $signedPayloadJWT = $data['signed_payload_jwt'];
+        if (empty($signedPayloadJWT)) {
             return [
                 'result' => 'error',
                 'error_message' => 'The signed request from BigCommerce was empty.'
@@ -23,7 +23,7 @@ abstract class WithBigCommerceSignedRequest
         }
 
         try {
-            $decoder = new JWTDecoder($signedPayload, $this->configuration->get("AppSecret"));
+            $decoder = new JWTHelper($signedPayloadJWT, $this->configuration->get("AppSecret"));
             $verifiedSignedRequestData = $decoder->decode();
         } catch (InvalidJWTToken) {
             return [

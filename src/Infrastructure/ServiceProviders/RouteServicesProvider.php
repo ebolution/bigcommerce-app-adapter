@@ -14,7 +14,4 @@ use Ebolution\ModuleManager\Infrastructure\ServiceProviders\RouteServicesProvide
 class RouteServicesProvider extends ModuleManagerRouteServicesProvider
 {
     const BASE_PATH = __DIR__;
-
-    protected bool $loadApi = true;
-    protected bool $loadWeb = false;
 }

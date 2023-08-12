@@ -19,11 +19,15 @@ abstract class Controller extends BaseController
         if (array_key_exists('result', $response))
         {
             if ($response['result'] === 'data') {
-                return response($response['data'], $response['status_code'])->withHeaders($response['headers']);
+                if (array_key_exists('headers', $response)) {
+                    return response($response['data'], $response['status_code'])->withHeaders($response['headers']);
+                } else {
+                    return response($response['data'], $response['status_code']);
+                }
             } elseif ($response['result'] === 'error') {
                 return redirect()->route('bigcommerce-app-adapter.error', ['error_message' => $response['error_message']]);
             } elseif ($response['result'] === 'redirect') {
-                return Redirect::to($response['url']);
+               return redirect($response['url']);
             } elseif ($response['result'] === 'view') {
                 return view("bigcommerce-app-adapter::{$response['view']}", $response['data'] ?? null);
             }

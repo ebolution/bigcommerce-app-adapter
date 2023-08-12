@@ -24,6 +24,13 @@ final class EloquentBCAuthorizedUserRepository implements BCAuthorizedUserReposi
         $this->model = new Model();
     }
 
+    public function findById(int $id): ?array
+    {
+        $response = $this->model->find($id);
+
+        return $response ? $response->toArray() : null;
+    }
+
     public function findByUserIdAndStoreHash(BCAuthorizedUserUserId $user_id, BCAuthorizedUserStoreHash $store_hash): ?array
     {
         $response = $this->model

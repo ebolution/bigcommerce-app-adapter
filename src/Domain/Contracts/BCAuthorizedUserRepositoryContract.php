@@ -15,6 +15,7 @@ use Ebolution\BigcommerceAppAdapter\Domain\ValueObjects\BCAuthorizedUserSaveRequ
 
 interface BCAuthorizedUserRepositoryContract
 {
+    public function findById(int $id): ?array;
     public function findByUserIdAndStoreHash(BCAuthorizedUserUserId $user_id, BCAuthorizedUserStoreHash $store_hash): ?array;
     public function deleteByUserIdAndStoreHash(BCAuthorizedUserUserId $user_id, BCAuthorizedUserStoreHash $store_hash): bool;
     public function deleteByStoreHash(BCAuthorizedUserStoreHash $store_hash): bool;

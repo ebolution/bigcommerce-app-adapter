@@ -14,19 +14,9 @@ Define and configure your new App on https://devtools.bigcommerce.com/my/apps an
 
 ## Configuration 
 
-Required configuration on `config/session.php`:
-
-```
-'secure' => env('SESSION_SECURE_COOKIE', true),
-'same_site' => env('SESSION_SAME_SITE', 'none'),
-```
-
 Values to add to your `.env` file:
 
 ```
-SESSION_SECURE_COOKIE=true
-SESSION_SAME_SITE=none
-
 BC_APP_CLIENT_ID=<your-app-client-id>
 BC_APP_SECRET=<your-app-client-secret>
 ```
@@ -47,40 +37,41 @@ BC_LOCAL_STORE_HASH=<api-account-store-hash>
 ```
 > The store hash is a part of the API PATH (https://api.bigcommerce.com/stores/<store-hash>/v3/)
 
-> If `APP_ENV` is not set to `local`, then the BigCommerce API proxy uses values stored on the session 
+> If `APP_ENV` is not set to `local`, then the BigCommerce API proxy uses values stored on the database 
 to authorize API calls. For this to work the application should be launched by the BigCommerce store
-via either the `auth` or `load` routes.
+via either the `auth` or `load` routes (see **Security** section).
 
 ## Routes
 
 ### Routes to be configured on the App
 
-Auth Callback UR: `https://<domain>/bc-app/auth`
+Auth Callback UR: `https://<domain>/api/auth`
 
-Load Callback URL: `https://<domain>/bc-app/load`
+Load Callback URL: `https://<domain>/api/load`
 
-Uninstall Callback URL: `https://<domain>/bc-app/uninstall`
+Uninstall Callback URL: `https://<domain>/api/uninstall`
 
-Remove User Callback URL: `https://<domain>/bc-app/remove-user`
+Remove User Callback URL: `https://<domain>/api/remove-user`
 
-### Route to make authorized calls to BigCommerce
+### Route to make authorized calls to BigCommerce (Proxy)
 
-`https://<domain>/bc-app/bc-api/<big-commerce-api-endpoint>`
+`https://<domain>/api/bc-api/<big-commerce-api-endpoint>`
 
 Where `<big-commerce-api-endpoint>` is something like `v2/store` or `v3/settings/store/locale`, following BigCommerce's API documentation (https://developer.bigcommerce.com/docs/rest)
 
 # Security
 
-This module does not enforce any particular security configuration. BigCommerce API calls are routed through
-the BigCommerce API Proxy which runs under the `web` middleware. 
+This module uses JWT Tokens to validate request made from the front-end application to BigCommerce API.
 
-So if you need to add a security layer to your BigCommerce API calls, add required middlewares to `$middlewareGroups['web']` on `app\Http\Kernel.php`
+Summary of the flow:
+1. BigCommerce loads the application on behalf of a user.
+1. The module generates a JWT token that contains the ID of the user.
+1. The module brings control to the front-end and sends the JWT token as the 'token' parameter (on the query string).
+1. The front-end application persists the token for later use.
+1. When the front-end application needs to make an authorized call to BigCommerce API, it passes the token on the `X-Auth-Token` request header to the proxy end-point.
+1. The proxy validates the token and retrieves other information required to pass the call to BigCommerce API.
+1. Request is sent to BigCommerce and response is passed back to the front-end application.
 
-In the case that your application requirements do not allow to modify the `web` middleware group:
+The token is valid for a period of `token_duration_hours` hours (see `config/bigcommerce-app-adapter.php`).
 
-1. Create a custom middleware with your security requirements. At the minimum, this middleware will include:
-   - \App\Http\Middleware\EncryptCookies::class
-   - \Illuminate\Cookie\Middleware\AddQueuedCookiesToResponse::class
-   - \Illuminate\Session\Middleware\StartSession::class
-   - \Illuminate\Routing\Middleware\SubstituteBindings::class
-1. Set that middleware on the `middleware` setting inside `config/bigcommerce-app-adapter.php`
+> The level of access to BigCommerce API is restricted by the scopes assigned to the App when it was configured.
