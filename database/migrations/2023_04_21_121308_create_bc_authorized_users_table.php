@@ -1,4 +1,11 @@
 <?php
+/**
+ * @category  Ebolution
+ * @package   ebolution/bigcommerce-app-adapter
+ * @author    Carlos Cid <carlos.cid@ebolution.com>
+ * @copyright 2023 Avanzed Cloud Develop S.L
+ * @license   MIT
+ */
 
 use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;

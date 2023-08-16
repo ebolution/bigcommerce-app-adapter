@@ -2,8 +2,8 @@
     "name": "ebolution/bigcommerce-app-adapter",
     "description": "Base functionality to connect an App with BigCommerce and to provide a way to make authorized calls to BigCommerce API",
     "minimum-stability": "stable",
-    "version": "1.0.2",
-    "license": "proprietary",
+    "version": "1.0.3",
+    "license": "MIT",
     "authors": [
         {
             "name": "carlos.cid",
@@ -18,12 +18,12 @@
             "Ebolution\\BigcommerceAppAdapter\\": "src/"
         }
     },
-    "repositories": {
-        "private-packagist": {
-            "type": "composer",
-            "url": "https://ebolution.repo.packagist.com/laravel/"
+    "repositories": [
+        {
+            "url": "https://github.com/ebolution/laravel-module-manager.git",
+            "type": "git"
         }
-    },
+    ],
     "extra": {
         "laravel": {
             "providers": [
