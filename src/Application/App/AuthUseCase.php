@@ -111,7 +111,10 @@ final class AuthUseCase
         $request = new BCAuthorizedUserSaveRequest($authUser, date("Y-m-d H:i:s"));
         $auth_id = $this->repository->save($request);
 
-        return $this->buildToken(['id' => $auth_id]);
+        return $this->buildToken([
+            'id' => $auth_id,
+            'sub' => $store_hash,
+        ]);
     }
 
     private function getBigcommerceLoginURL(bool $succeeded = true): string

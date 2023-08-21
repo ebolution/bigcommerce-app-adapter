@@ -36,11 +36,12 @@ class ValidateTokenUseCase
             throw new InvalidJWTToken('Token has an invalid issuer');
         }
 
-        if ($data['sub'] !== 'BigCommerce') {
+        $authUser = $this->repository->findById($data['id']);
+
+        if ($data['sub'] !== $authUser['store_hash']) {
             throw new InvalidJWTToken('Token subject is invalid');
         }
 
-        $authUser = $this->repository->findById($data['id']);
         $this->storage->persist($authUser);
 
         return true;

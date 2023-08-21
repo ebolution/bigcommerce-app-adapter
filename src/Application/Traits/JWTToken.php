@@ -27,7 +27,6 @@ trait JWTToken
         $hours = $this->configuration->get("token_duration_hours");
         $payload = [
             'iss' => $this->configuration->get("AppName"),      // Issuer
-            'sub' => 'BigCommerce',                             // Subject
             'iat' => time(),                                    // Issued at
             'exp' => strtotime("+{$hours} hours"),      // Expires at
         ];

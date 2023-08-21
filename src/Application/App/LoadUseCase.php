@@ -49,7 +49,10 @@ final class LoadUseCase extends WithBigCommerceSignedRequest
             $this->authorizeNewUser($verifiedSignedRequestData, $authUser['access_token']);
         }
 
-        $token = $this->buildToken(['id' => $authUser['id']]);
+        $token = $this->buildToken([
+            'id' => $authUser['id'],
+            'sub' => $store_hash,
+        ]);
 
         return [
             'result' => 'redirect',
